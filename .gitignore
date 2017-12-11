@@ -1,0 +1,5 @@
+MNIST_data
+__pycache__
+ffmpeg
+data
+.ipynb_checkpoints
