@@ -36,8 +36,8 @@ K.set_image_data_format('channels_first')
 from keras.metrics import categorical_accuracy as accuracy
 from keras.metrics import categorical_crossentropy as crossentropy
 
-from vgg16 import *
-from vgg16bn import *
+#from vgg16 import *
+#from vgg16bn import *
 
 def get_batches(path, gen=image.ImageDataGenerator(), shuffle=True, batch_size=8, 
                 target_size=(224, 224), class_mode='categorical'):
@@ -167,8 +167,8 @@ def load_array(fname):
     return bcolz.open(fname)[:]
 
 
-
-
+def ceil(x):
+    return int(math.ceil(x))
 
 
 
