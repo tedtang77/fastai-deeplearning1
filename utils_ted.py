@@ -27,6 +27,9 @@ from keras.layers import merge # [Deprecared] merge
 from keras.layers.core import Flatten, Dropout
 from keras.optimizers import Adam
 from keras.regularizers import l2
+# https://blog.keras.io/keras-as-a-simplified-interface-to-tensorflow-tutorial.html
+from keras.metrics import categorical_accuracy as accuracy
+
 from keras import backend as K
 import tensorflow as tf
 sess = tf.Session()
@@ -167,8 +170,34 @@ def load_array(fname):
     return bcolz.open(fname)[:]
 
 
+def eval_accuracy(test_labels, preds):
+    with sess.as_default():
+        eval_result = accuracy(test_labels, preds).eval()
+    return eval_result.mean()
+
+
 def ceil(x):
     return int(math.ceil(x))
+
+
+class MixIterator(object):
+    
+    def __init__(self, iters):
+        self.iters = iters
+        self.n = sum([itr.n for itr in self.iters])
+        self.batch_size = sum([itr.batch_size for itr in self.iters])
+    
+    def reset(self):
+        for itr in self.iters: itr.reset()
+    
+    def __iter__(self):
+        return self
+    
+    def __next__(self, *args, **kwargs):
+        nexts = [next(itr) for itr in self.iters]
+        n0 = np.concatenate([n[0] for n in nexts])
+        n1 = np.concatenate([n[1] for n in nexts])
+        return (n0, n1)
 
 
 

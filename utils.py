@@ -263,11 +263,15 @@ def split_at(model, layer_type):
 class MixIterator(object):
     def __init__(self, iters):
         self.iters = iters
+        self.n = sum([it.n for it in self.iters])
+        self.batch_size = sum([it.batch_size for it in self.iters])
+        """
         self.multi = type(iters) is list
         if self.multi:
             self.N = sum([it[0].N for it in self.iters])
         else:
             self.N = sum([it.N for it in self.iters])
+        """
 
     def reset(self):
         for it in self.iters: it.reset()
@@ -275,6 +279,12 @@ class MixIterator(object):
     def __iter__(self):
         return self
 
+    def __next__(self, *args, **kwargs):
+        nexts = [next(it) for it in self.iters]
+        n0 = np.concatenate([n[0] for n in nexts])
+        n1 = np.concatenate([n[1] for n in nexts])
+        return (n0, n1)
+"""
     def next(self, *args, **kwargs):
         if self.multi:
             nexts = [[next(it) for it in o] for o in self.iters]
@@ -286,4 +296,5 @@ class MixIterator(object):
             n0 = np.concatenate([n[0] for n in nexts])
             n1 = np.concatenate([n[1] for n in nexts])
             return (n0, n1)
+"""
 
