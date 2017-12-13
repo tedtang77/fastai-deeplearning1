@@ -21,8 +21,8 @@ from sklearn.manifold import TSNE
 from keras.utils import get_file, to_categorical
 from keras.preprocessing import image, sequence
 from keras.models import Sequential, Model
-from keras.layers import Dense, BatchNormalization, Conv2D, MaxPooling2D, Conv1D, MaxPooling1D, LSTM
-from keras.layers import Input, Embedding, Dot, dot, add, Concatenate, SpatialDropout1D
+from keras.layers import Dense, BatchNormalization, Conv2D, MaxPooling2D, Conv1D, MaxPooling1D, LSTM, SimpleRNN
+from keras.layers import Input, Embedding, Dot, dot, Add, add, Concatenate, SpatialDropout1D
 from keras.layers import merge # [Deprecared] merge 
 from keras.layers.core import Flatten, Dropout
 from keras.optimizers import Adam
