@@ -29,6 +29,7 @@ from keras.optimizers import Adam
 from keras.regularizers import l2
 # https://blog.keras.io/keras-as-a-simplified-interface-to-tensorflow-tutorial.html
 from keras.metrics import categorical_accuracy as accuracy
+from keras.metrics import categorical_crossentropy as crossentropy
 
 from keras import backend as K
 import tensorflow as tf
@@ -170,14 +171,35 @@ def load_array(fname):
     return bcolz.open(fname)[:]
 
 
-def eval_accuracy(test_labels, preds):
+def eval_accuracy(labels, preds):
+    """
+        https://blog.keras.io/keras-as-a-simplified-interface-to-tensorflow-tutorial.html
+    """
+   
+    acc_value = accuracy(labels, preds)
     with sess.as_default():
-        eval_result = accuracy(test_labels, preds).eval()
+        eval_result = acc_value.eval()
+    return eval_result.mean()
+
+
+def eval_crossentropy(labels, preds):
+    """
+        
+        Ref: https://stackoverflow.com/questions/46687064/categorical-crossentropy-loss-no-attribute-get-shape
+    """
+   
+    entropy_value = crossentropy(K.constant(labels.astype('float32')), K.constant(preds.astype('float32')))
+    with sess.as_default():
+        eval_result = entropy_value.eval()
     return eval_result.mean()
 
 
 def ceil(x):
     return int(math.ceil(x))
+
+
+def floor(x):
+    return int(math.floor(x))
 
 
 class MixIterator(object):
