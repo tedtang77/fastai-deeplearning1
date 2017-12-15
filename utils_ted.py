@@ -4,7 +4,7 @@ import pickle
 
 from glob import glob
 import numpy as np
-from numpy.random import normal, permutation, uniform
+from numpy.random import normal, permutation, uniform, choice
 from matplotlib import pyplot as plt
 
 from operator import itemgetter, attrgetter, methodcaller
@@ -24,6 +24,7 @@ from keras.models import Sequential, Model
 from keras.layers import Dense, BatchNormalization, Conv2D, MaxPooling2D, Conv1D, MaxPooling1D, LSTM, SimpleRNN
 from keras.layers import Input, Embedding, Dot, dot, Add, add, Concatenate, SpatialDropout1D
 from keras.layers import merge # [Deprecared] merge 
+from keras.layers import TimeDistributed, Activation
 from keras.layers.core import Flatten, Dropout
 from keras.optimizers import Adam
 from keras.regularizers import l2
