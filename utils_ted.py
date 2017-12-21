@@ -4,7 +4,7 @@ import pickle
 
 from glob import glob
 import numpy as np
-from numpy.random import normal, permutation, uniform, choice
+from numpy.random import normal, permutation, uniform, choice, random
 from matplotlib import pyplot as plt
 
 from operator import itemgetter, attrgetter, methodcaller
