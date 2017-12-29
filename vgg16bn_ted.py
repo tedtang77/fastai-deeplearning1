@@ -20,24 +20,8 @@ sess = tf.Session()
 K.set_session(sess)
 K.set_image_data_format('channels_first') # Ex: (3, 224, 224)
 
-# vgg_mean (in BGR)
-vgg_mean = np.array([123.68, 116.779, 103.939], dtype=np.float32).reshape((3,1,1))
-vgg_dropout = 0.5
 
 
-def vgg_preprocess(x):
-    """
-        Subtracts the mean RGB value, and transposes RGB to BGR.
-        The mean RGB was computed on the image set used to train the VGG model
-        (VGG-16 and VGG-19 were trained using Caffe, and Caffe uses OpenCV to load images which uses BGR by default, so both VGG models are expecting BGR images.)
-        
-        Args:
-            x: Image array (height x width x channels)
-        Returns:
-            Image array (height x width x transposed_channels)
-    """
-    x = x - vgg_mean
-    return x[:,::-1] # reverse axis RGB into BGR
 
 
 class Vgg16BN():
@@ -48,12 +32,29 @@ class Vgg16BN():
     
     def __init__(self, size=(224, 224), include_top=True):
         self.FILE_PATH = 'http://files.fast.ai/models/'
-        self.dropout = 0.5
+        # vgg_mean (in BGR)
+        self.vgg_mean = np.array([123.68, 116.779, 103.939], dtype=np.float32).reshape((3,1,1))
+        self.vgg_dropout = 0.5
+        self.dropout = self.vgg_dropout
         self.create(size, include_top)
         self.get_classes()
         
         
+    def vgg_preprocess(self, x):
+        """
+            Subtracts the mean RGB value, and transposes RGB to BGR.
+            The mean RGB was computed on the image set used to train the VGG model
+            (VGG-16 and VGG-19 were trained using Caffe, and Caffe uses OpenCV to load images which uses BGR by default, so both VGG models             are expecting BGR images.)
         
+            Args:
+                x: Image array (height x width x channels)
+            Returns:
+               Image array (height x width x transposed_channels)
+        """
+        x = x - self.vgg_mean
+        return x[:,::-1] # reverse axis RGB into BGR
+    
+    
     def get_classes(self):
         """
             Downloads the Imagenet classes index file and loads it to self.classes.
@@ -112,7 +113,7 @@ class Vgg16BN():
         model = self.model
         model.add(Dense(4096, activation='relu', name=name))
         model.add(BatchNormalization())
-        model.add(Dropout(vgg_dropout))
+        model.add(Dropout(self.dropout))
 
     
     def set_dropout(self, dropout=0.): 
@@ -144,7 +145,7 @@ class Vgg16BN():
             include_top = False
                       
         model = self.model = Sequential()
-        model.add(Lambda(vgg_preprocess, input_shape=(3,)+size, output_shape=(3,)+size))
+        model.add(Lambda(self.vgg_preprocess, input_shape=(3,)+size, output_shape=(3,)+size))
 
         self.ConvBlock(2, 64)
         self.ConvBlock(2, 128)
@@ -192,11 +193,13 @@ class Vgg16BN():
         model.pop()
         for layer in model.layers:  layer.trainable = False
             
+        """   
         # make the model trainable for all FC layers
         layers = model.layers
         last_conv_idx = [idx for idx, layer in enumerate(layers) if type(layer) is Conv2D][-1]
         for conv_layer in layers[:last_conv_idx+1]: conv_layer.trainable = False
         for fc_layer in layers[last_conv_idx+1:]: fc_layer.trainable = True
+        """ 
         
         model.add(Dense(num, activation='softmax'))
         self.compile()
