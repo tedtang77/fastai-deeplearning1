@@ -44,7 +44,7 @@ class Vgg16BN():
         """
             Subtracts the mean RGB value, and transposes RGB to BGR.
             The mean RGB was computed on the image set used to train the VGG model
-            (VGG-16 and VGG-19 were trained using Caffe, and Caffe uses OpenCV to load images which uses BGR by default, so both VGG models             are expecting BGR images.)
+            (VGG-16 and VGG-19 were trained using Caffe, and Caffe uses OpenCV to load images which uses BGR by default, so both VGG models are expecting BGR images.)
         
             Args:
                 x: Image array (height x width x channels)
